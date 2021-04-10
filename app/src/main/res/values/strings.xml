@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">companion</string>
+    <string name="notification_service_name">Notification Service</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="bluetooth_prefs">bluetooth_prefs</string>
+</resources>
