@@ -1,10 +1,12 @@
 package com.openwatch.companion
 
+import android.Manifest
 import android.bluetooth.le.ScanResult
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
@@ -25,6 +27,14 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
     override fun onStart() {
         super.onStart()
 
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            bindToBt()
+        } else {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST)
+        }
+    }
+
+    private fun bindToBt() {
         if (!bindService(Intent(this, BluetoothService::class.java), this, Context.BIND_AUTO_CREATE)) {
             Log.d(TAG, "Bind Failed")
         }
@@ -52,6 +62,14 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
         }
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                bindToBt()
+            }
+        }
+    }
+
     private fun onWatchFound(result: ScanResult): Boolean {
         Log.d(TAG, "Found device ${result.device.name}")
 
@@ -64,5 +82,7 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 
     companion object {
         const val TAG = "MainActivity"
+
+        const val LOCATION_PERMISSION_REQUEST = 1
     }
 }
